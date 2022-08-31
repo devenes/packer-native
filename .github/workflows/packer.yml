@@ -45,7 +45,7 @@ jobs:
         with:
           command: validate
           arguments: -syntax-only
-          target: aws-packer.hcl
+          target: aws-packer.pkr.hcl
 
       # build artifact
       - name: Build Artifact
@@ -54,7 +54,7 @@ jobs:
         with:
           command: build
           arguments: "-color=false -on-error=abort"
-          target: aws-packer.hcl
+          target: aws-packer.pkr.hcl
         env:
           PACKER_LOG: 1
         if: steps.init-packer-template.status == 'success' && steps.validate.status == 'success'
