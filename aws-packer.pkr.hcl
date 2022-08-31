@@ -31,14 +31,13 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-source "amazon-ebs" "ubuntu_docker" {
+source "amazon-ebs" "ubuntu_java" {
   ami_name      = "${var.ami_prefix}-${local.timestamp}"
   instance_type = var.instance_type
   region        = var.aws_region
-
   source_ami_filter {
     filters = {
-      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-focal-20.04-amd64-server-*"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
@@ -49,24 +48,24 @@ source "amazon-ebs" "ubuntu_docker" {
 }
 
 build {
-  name = "packer-ubuntu-docker"
+  name = "packer-ubuntu"
   sources = [
-    "source.amazon-ebs.ubuntu_docker"
+    "source.amazon-ebs.ubuntu_java"
   ]
 
-  provisioner "shell-local" {
+  provisioner "shell" {
+
     inline = [
-      "echo Install Docker - START",
+      "echo Install Open JDK 8 - START",
       "sleep 10",
       "sudo apt-get update",
-      "sudo apt-get upgrade -y",
-      "apt install -y docker.io",
-      "echo Install Docker - SUCCESS",
-      "sudo usermod -aG docker ubuntu",
-      "newgrp docker",
-      "echo Add ubuntu to docker group - SUCCESS",
+      "sudo apt-get install -y openjdk-8-jdk",
+      "echo Install Open JDK 8 - SUCCESS",
+      "sudo apt-get install -y docker.io",
       "sudo systemctl enable docker",
-      "echo Enable docker service - SUCCESS",
+      "sudo systemctl start docker",
+      "sudo usermod -aG docker ubuntu",
+      "echo Install Docker - SUCCESS",
     ]
   }
 }
