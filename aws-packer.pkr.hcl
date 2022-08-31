@@ -9,7 +9,22 @@ packer {
 
 variable "ami_prefix" {
   type    = string
-  default = "packer-aws-ubuntu-java"
+  default = "packer-aws-docker"
+}
+
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "ssh_username" {
+  type    = string
+  default = "ubuntu"
 }
 
 locals {
@@ -18,8 +33,8 @@ locals {
 
 source "amazon-ebs" "ubuntu_java" {
   ami_name      = "${var.ami_prefix}-${local.timestamp}"
-  instance_type = "t2.micro"
-  region        = "us-east-1"
+  instance_type = var.instance_type
+  region        = var.aws_region
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
@@ -29,7 +44,7 @@ source "amazon-ebs" "ubuntu_java" {
     most_recent = true
     owners      = ["099720109477"]
   }
-  ssh_username = "ubuntu"
+  ssh_username = var.ssh_username
 }
 
 build {
@@ -46,6 +61,11 @@ build {
       "sudo apt-get update",
       "sudo apt-get install -y openjdk-8-jdk",
       "echo Install Open JDK 8 - SUCCESS",
+      "sudo apt-get install -y docker.io",
+      "sudo systemctl enable docker",
+      "sudo systemctl start docker",
+      "sudo usermod -aG docker ubuntu",
+      "echo Install Docker - SUCCESS",
     ]
   }
 }
