@@ -9,68 +9,43 @@ packer {
 
 variable "ami_prefix" {
   type    = string
-  default = "packer-aws-docker"
-}
-
-variable "aws_region" {
-  type    = string
-  default = "us-east-1"
-}
-
-variable "instance_type" {
-  type    = string
-  default = "t2.micro"
-}
-
-variable "ssh_username" {
-  type    = string
-  default = "ubuntu"
+  default = "packer-aws-ubuntu-java"
 }
 
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-source "amazon-ebs" "ubuntu_docker" {
+source "amazon-ebs" "ubuntu_java" {
   ami_name      = "${var.ami_prefix}-${local.timestamp}"
-  instance_type = var.instance_type
-  region        = var.aws_region
-
+  instance_type = "t2.micro"
+  region        = "us-east-1"
   source_ami_filter {
     filters = {
-      name                = "ubuntu/images/*ubuntu-focal-20.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
     most_recent = true
     owners      = ["099720109477"]
   }
-  ssh_username = var.ssh_username
+  ssh_username = "ubuntu"
 }
 
 build {
-  name = "packer-ubuntu-docker"
+  name = "packer-ubuntu"
   sources = [
-    "source.amazon-ebs.ubuntu_docker"
+    "source.amazon-ebs.ubuntu_java"
   ]
 
-  provisioner "shell-local" {
+  provisioner "shell" {
+
     inline = [
-      "echo Install Docker - START",
-      # "sleep 10",
-      "su -",
-      "apt-get update",
-      "apt install sudo -y",
-      "exit",
-      "apt-get install -y docker.io",
-      # "apt-get upgrade -y",
-      # "apt install -y docker.io",
-      # "echo Install Docker - SUCCESS",
-      # "usermod -aG docker ubuntu",
-      # "newgrp docker",
-      # "echo Add ubuntu to docker group - SUCCESS",
-      "systemctl enable docker",
-      # "echo Enable docker service - SUCCESS",
+      "echo Install Open JDK 8 - START",
+      "sleep 10",
+      "sudo apt-get update",
+      "sudo apt-get install -y openjdk-8-jdk",
+      "echo Install Open JDK 8 - SUCCESS",
     ]
   }
 }
