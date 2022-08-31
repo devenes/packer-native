@@ -58,7 +58,11 @@ build {
     inline = [
       "echo Install Docker - START",
       # "sleep 10",
-      "sudo apt-get update",
+      "su -",
+      "apt update",
+      "apt-get update",
+      "apt install sudo -y",
+      "exit",
       "apt-get install -y docker.io",
       # "apt-get upgrade -y",
       # "apt install -y docker.io",
