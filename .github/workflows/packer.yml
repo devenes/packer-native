@@ -57,4 +57,4 @@ jobs:
           target: aws-packer.pkr.hcl
         env:
           PACKER_LOG: 1
-        if: steps.init-packer-template.status == 'success' && steps.validate.status == 'success'
+        if: steps.init-packer-template.status != 'failure' && steps.validate.status != 'failure'
