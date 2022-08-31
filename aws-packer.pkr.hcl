@@ -59,7 +59,6 @@ build {
       "echo Install Docker - START",
       # "sleep 10",
       "su -",
-      "apt update",
       "apt-get update",
       "apt install sudo -y",
       "exit",
