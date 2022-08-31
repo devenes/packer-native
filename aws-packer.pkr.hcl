@@ -58,14 +58,15 @@ build {
     inline = [
       "echo Install Docker - START",
       # "sleep 10",
-      # "apt-get update",
+      "apt-get update",
+      "apt-get install -y docker.io",
       # "apt-get upgrade -y",
       # "apt install -y docker.io",
       # "echo Install Docker - SUCCESS",
       # "usermod -aG docker ubuntu",
       # "newgrp docker",
       # "echo Add ubuntu to docker group - SUCCESS",
-      # "systemctl enable docker",
+      "systemctl enable docker",
       # "echo Enable docker service - SUCCESS",
     ]
   }
