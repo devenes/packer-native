@@ -38,7 +38,7 @@ source "amazon-ebs" "ubuntu_docker" {
 
   source_ami_filter {
     filters = {
-      name                = "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*"
+      name                = "ubuntu/images/*ubuntu-focal-20.04-amd64-server-*"
       root-device-type    = "ebs"
       virtualization-type = "hvm"
     }
@@ -58,7 +58,7 @@ build {
     inline = [
       "echo Install Docker - START",
       # "sleep 10",
-      "apt-get update",
+      "sudo apt-get update",
       "apt-get install -y docker.io",
       # "apt-get upgrade -y",
       # "apt install -y docker.io",
