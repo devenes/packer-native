@@ -1,0 +1,60 @@
+name: AWS AMI Packer Builder
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+  # schedule:
+  #   - cron: "0 4 * * *"
+
+jobs:
+  packer:
+    runs-on: ubuntu-latest
+
+    name: packer
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Initialize Packer templates
+      - name: Initialize Packer Template
+        uses: hashicorp/packer-github-actions@master
+        id: init-packer-template
+        with:
+          command: init
+
+      # validate templates
+      - name: Validate Template
+        uses: hashicorp/packer-github-actions@master
+        id: validate
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: aws-packer.hcl
+
+      # build artifact
+      - name: Build Artifact
+        uses: hashicorp/packer-github-actions@master
+        id: build
+        with:
+          command: build
+          arguments: "-color=false -on-error=abort"
+          target: aws-packer.hcl
+        env:
+          PACKER_LOG: 1
+        if: steps.init-packer-template.status == success && steps.validate.status == success
