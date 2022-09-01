@@ -31,7 +31,8 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }
 
-source "amazon-ebs" "ubuntu_java" {
+# AMI names must be unique else it will throw an error.
+source "amazon-ebs" "ubuntu_docker" {
   ami_name      = "${var.ami_prefix}-${local.timestamp}"
   instance_type = var.instance_type
   region        = var.aws_region
@@ -50,7 +51,7 @@ source "amazon-ebs" "ubuntu_java" {
 build {
   name = "packer-ubuntu"
   sources = [
-    "source.amazon-ebs.ubuntu_java"
+    "source.amazon-ebs.ubuntu_docker"
   ]
 
   provisioner "shell" {
@@ -66,6 +67,10 @@ build {
       "sudo systemctl start docker",
       "sudo usermod -aG docker ubuntu",
       "echo Install Docker - SUCCESS",
+      "sudo apt -y remove needrestart",
+      "sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common",
+      "sudo apt-add-repository -y --update ppa:ansible/ansible",
+      "sudo apt install ansible -y",
     ]
   }
 }
